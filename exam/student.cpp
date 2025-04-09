@@ -7,7 +7,8 @@
 #include <iomanip>
 using namespace std;
 
-class Student {
+class Student
+{
 public:
     int rollNo;
     string name;
@@ -16,14 +17,16 @@ public:
 
     Student() {}
 
-    Student(int r, string n, string b, float m) {
+    Student(int r, string n, string b, float m)
+    {
         rollNo = r;
         name = n;
         branch = b;
         marks = m;
     }
 
-    void input() {
+    void input()
+    {
         cout << "Enter Roll No: ";
         cin >> rollNo;
         cin.ignore();
@@ -35,23 +38,27 @@ public:
         cin >> marks;
     }
 
-    void display() const {
+    void display() const
+    {
         cout << setw(6) << rollNo << " | " << setw(15) << name << " | "
-             << setw(10) << branch << " | " << setw(5) << marks << endl;
+            << setw(10) << branch << " | " << setw(5) << marks << endl;
     }
 
-    string serialize() const {
+    string serialize() const
+    {
         stringstream ss;
         ss << rollNo << "," << name << "," << branch << "," << marks;
         return ss.str();
     }
 
-    static Student deserialize(const string &line) {
+    static Student deserialize(const string &line)
+    {
         stringstream ss(line);
         string item;
         vector<string> tokens;
 
-        while (getline(ss, item, ',')) {
+        while (getline(ss, item, ','))
+        {
             tokens.push_back(item);
         }
 
@@ -59,39 +66,47 @@ public:
     }
 };
 
-class RecordManager {
+class RecordManager
+{
 private:
     unordered_map<int, Student> students;
-    const string filename = "students.txt";
+    const string filename = "details.txt";
 
 public:
-    RecordManager() {
+    RecordManager()
+    {
         loadFromFile();
     }
 
-    void loadFromFile() {
+    void loadFromFile()
+    {
         students.clear();
         ifstream fin(filename);
         string line;
-        while (getline(fin, line)) {
+        while (getline(fin, line))
+        {
             Student s = Student::deserialize(line);
             students[s.rollNo] = s;
         }
         fin.close();
     }
 
-    void saveToFile() {
+    void saveToFile()
+    {
         ofstream fout(filename);
-        for (const auto &pair : students) {
+        for (const auto &pair : students)
+        {
             fout << pair.second.serialize() << endl;
         }
         fout.close();
     }
 
-    void addStudent() {
+    void addStudent()
+    {
         Student s;
         s.input();
-        if (students.find(s.rollNo) != students.end()) {
+        if (students.find(s.rollNo) != students.end())
+        {
             cout << "Student with this roll number already exists!" << endl;
             return;
         }
@@ -100,34 +115,45 @@ public:
         cout << "Student added successfully!\n";
     }
 
-    void deleteStudent(int roll) {
-        if (students.erase(roll)) {
+    void deleteStudent(int roll)
+    {
+        if (students.erase(roll))
+        {
             saveToFile();
             cout << "Student deleted successfully!\n";
-        } else {
+        }
+        else
+        {
             cout << "Student not found!\n";
         }
     }
 
-    void searchStudent(int roll) {
-        if (students.find(roll) != students.end()) {
+    void searchStudent(int roll)
+    {
+        if (students.find(roll) != students.end())
+        {
             cout << "Student Found:\n";
             cout << "Roll | Name            | Branch     | Marks\n";
             cout << "-----------------------------------------------\n";
             students[roll].display();
-        } else {
+        }
+        else
+        {
             cout << "Student not found!\n";
         }
     }
 
-    void showTop3() {
-        if (students.empty()) {
+    void showTop3()
+    {
+        if (students.empty())
+        {
             cout << "No students to show!\n";
             return;
         }
 
         priority_queue<pair<float, int>> pq;
-        for (auto &entry : students) {
+        for (auto &entry : students)
+        {
             pq.push({entry.second.marks, entry.first});
         }
 
@@ -136,7 +162,8 @@ public:
         cout << "-----------------------------------------------\n";
 
         int count = 0;
-        while (!pq.empty() && count < 3) {
+        while (!pq.empty() && count < 3)
+        {
             int roll = pq.top().second;
             pq.pop();
             students[roll].display();
@@ -144,25 +171,30 @@ public:
         }
     }
 
-    void displayAll() {
-        if (students.empty()) {
+    void displayAll()
+    {
+        if (students.empty())
+        {
             cout << "No students in record.\n";
             return;
         }
 
         cout << "Roll | Name            | Branch     | Marks\n";
         cout << "-----------------------------------------------\n";
-        for (auto &entry : students) {
+        for (auto &entry : students)
+        {
             entry.second.display();
         }
     }
 };
 
-int main() {
+int main()
+{
     RecordManager manager;
     int choice;
 
-    while (true) {
+    while (true)
+    {
         cout << "\n===== University Student Record System =====\n";
         cout << "1. Add Student\n";
         cout << "2. Delete Student\n";
@@ -173,18 +205,21 @@ int main() {
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
+        switch (choice)
+        {
         case 1:
             manager.addStudent();
             break;
-        case 2: {
+        case 2:
+        {
             int roll;
             cout << "Enter Roll No to delete: ";
             cin >> roll;
             manager.deleteStudent(roll);
             break;
         }
-        case 3: {
+        case 3:
+        {
             int roll;
             cout << "Enter Roll No to search: ";
             cin >> roll;
