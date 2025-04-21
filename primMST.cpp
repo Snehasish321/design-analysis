@@ -1,58 +1,62 @@
 #include <iostream>
-#include <climits>
+#include <climits> // for INT_MAX
 using namespace std;
 
-#define V 5 // Number of vertices in the graph
+int main() {
+    int n;
 
-int minKey(int key[], bool mstSet[]) {
-    int min = INT_MAX, min_index;
-    for (int v = 0; v < V; v++) {
-        if (!mstSet[v] && key[v] < min) {
-            min = key[v], min_index = v;
-        }
-    }
-    return min_index;
-}
+    // Input number of vertices
+    cout << "Enter the number of vertices: ";
+    cin >> n;
 
-void printMST(int parent[], int graph[V][V]) {
-    cout << "Edge \tWeight\n";
-    for (int i = 1; i < V; i++) {
-        cout << parent[i] << " - " << i << " \t" << graph[i][parent[i]] << "\n";
-    }
-}
+    int cost[n][n];
 
-void primMST(int graph[V][V]) {
-    int parent[V];
-    int key[V];
-    bool mstSet[V];
-
-    for (int i = 0; i < V; i++) {
-        key[i] = INT_MAX, mstSet[i] = false;
-    }
-    key[0] = 0;
-    parent[0] = -1;
-
-    for (int count = 0; count < V - 1; count++) {
-        int u = minKey(key, mstSet);
-        mstSet[u] = true;
-        for (int v = 0; v < V; v++) {
-            if (graph[u][v] && !mstSet[v] && graph[u][v] < key[v]) {
-                parent[v] = u, key[v] = graph[u][v];
+    // Input adjacency matrix (graph represented as cost matrix)
+    cout << "Enter the cost adjacency matrix (use 0 for no edge):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> cost[i][j];
+            if (cost[i][j] == 0) {
+                cost[i][j] = INT_MAX; // No direct edge
             }
         }
     }
-    printMST(parent, graph);
-}
 
-int main() {
-    int graph[V][V] = {
-        {0, 2, 0, 6, 0},
-        {2, 0, 3, 8, 5},
-        {0, 3, 0, 0, 7},
-        {6, 8, 0, 0, 9},
-        {0, 5, 7, 9, 0}};
+    int selected[n]; // keeps track of selected vertices
+    for (int i = 0; i < n; i++) {
+        selected[i] = 0;
+    }
 
-    primMST(graph);
+    selected[0] = 1; // Start from the first vertex
+    int edge_count = 0;
+    int min_cost = 0;
+
+    cout << "\nEdges in the Minimum Spanning Tree:\n";
+
+    while (edge_count < n - 1) {
+        int min = INT_MAX;
+        int x = 0, y = 0;
+
+        // Find the minimum cost edge from selected to unselected vertex
+        for (int i = 0; i < n; i++) {
+            if (selected[i]) {
+                for (int j = 0; j < n; j++) {
+                    if (!selected[j] && cost[i][j] < min) {
+                        min = cost[i][j];
+                        x = i;
+                        y = j;
+                    }
+                }
+            }
+        }
+
+        cout << "Edge " << edge_count + 1 << ": (" << x << " - " << y << ") cost = " << cost[x][y] << endl;
+        min_cost += cost[x][y];
+        selected[y] = 1;
+        edge_count++;
+    }
+
+    cout << "\nMinimum Cost of Spanning Tree: " << min_cost << endl;
 
     return 0;
 }
